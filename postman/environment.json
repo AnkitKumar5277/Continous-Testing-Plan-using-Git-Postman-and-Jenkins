@@ -1,0 +1,21 @@
+{
+  "id": "restful-booker-env",
+  "name": "Restful Booker Environment",
+  "values": [
+    {
+      "key": "token",
+      "value": "05c953b8cd340e9",
+      "enabled": true
+    },
+    {
+      "key": "booking_id",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "key": "base_url",
+      "value": "https://restful-booker.herokuapp.com",
+      "enabled": true
+    }
+  ]
+}
