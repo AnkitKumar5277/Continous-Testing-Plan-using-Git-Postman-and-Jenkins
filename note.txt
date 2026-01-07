@@ -8,7 +8,12 @@ Create Jenkinsfile -> give ss of github project folder + this:
 pipeline {
     agent any
 
+    tools {
+        allure 'Allure'
+    }
+
     stages {
+
         stage('Checkout Code') {
             steps {
                 git branch: 'main', url: '<your-repo-url>'
@@ -20,7 +25,8 @@ pipeline {
                 bat '''
                 newman run postman/collection.json ^
                 -e postman/environment.json ^
-                -r html --reporter-html-export reports/report.html
+                -r allure ^
+                --reporter-allure-export allure-results
                 '''
             }
         }
@@ -28,11 +34,11 @@ pipeline {
 
     post {
         always {
-            publishHTML([
-                reportDir: 'reports',
-                reportFiles: 'report.html',
-                reportName: 'Postman API Test Report'
+            allure([
+                includeProperties: false,
+                jdk: '',
+                results: [[path: 'allure-results']]
             ])
         }
     }
-} 
+}
