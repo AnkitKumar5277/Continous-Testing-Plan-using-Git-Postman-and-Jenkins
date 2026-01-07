@@ -1,10 +1,15 @@
 pipeline {
     agent any
 
+    tools {
+        allure 'Allure'
+    }
+
     stages {
+
         stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/AnkitKumar5277/Continous-Testing-Plan-using-Git-Postman-and-Jenkins.git'
+                git branch: 'main', url: '<your-repo-url>'
             }
         }
 
@@ -13,7 +18,8 @@ pipeline {
                 bat '''
                 newman run postman/Continuous-Testing.postman_collection.json ^
                 -e postman/environment.json ^
-                -r html --reporter-html-export reports/report.html
+                -r allure ^
+                --reporter-allure-export allure-results
                 '''
             }
         }
@@ -21,14 +27,12 @@ pipeline {
 
     post {
         always {
-            publishHTML([
-                allowMissing: false,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: 'reports',
-                reportFiles: 'report.html',
-                reportName: 'Postman API Test Report'
+            allure([
+                includeProperties: false,
+                jdk: '',
+                results: [[path: 'allure-results']]
             ])
         }
     }
 }
+
