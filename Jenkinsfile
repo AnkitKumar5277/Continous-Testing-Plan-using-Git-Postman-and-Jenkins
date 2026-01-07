@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs 'NodeJS'   // Configure NodeJS in Jenkins Global Tools
-    }
-
     stages {
 
         stage('Checkout Code') {
@@ -14,18 +10,12 @@ pipeline {
             }
         }
 
-        stage('Install Newman') {
-            steps {
-                bat 'npm install -g newman newman-reporter-html'
-            }
-        }
-
-        stage('Run Postman Collection') {
+        stage('Run Postman Tests') {
             steps {
                 bat '''
+                mkdir reports
                 newman run postman/Continuous-Testing.postman_collection.json ^
-                -r cli,html ^
-                --reporter-html-export reports/postman-report.html
+                -r html --reporter-html-export reports/report.html
                 '''
             }
         }
@@ -33,15 +23,14 @@ pipeline {
 
     post {
         always {
-            archiveArtifacts artifacts: 'reports/*.html', fingerprint: true
-        }
-
-        success {
-            echo '✅ Postman tests executed successfully!'
-        }
-
-        failure {
-            echo '❌ Postman tests failed. Please check the report.'
+            publishHTML([
+                allowMissing: false,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: 'reports',
+                reportFiles: 'report.html',
+                reportName: 'Postman API Test Report'
+            ])
         }
     }
 }
