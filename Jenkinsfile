@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        allure 'Allure'
-    }
-
     stages {
 
         stage('Checkout Code') {
@@ -35,4 +31,3 @@ pipeline {
         }
     }
 }
-
